@@ -1,0 +1,70 @@
+<html>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/searchbuilder/1.3.2/js/dataTables.searchBuilder.min.js"></script>
+  <script src="angebote_all.js"></script>
+  <link href="css/lightbox.min.css" rel="stylesheet" />
+  <script src="js/lightbox.min.js"></script>
+
+
+  <script>
+    $(document).ready(function() {
+      $.fn.dataTable.ext.errMode = 'none';
+      console.log(data[0])
+    $('#example').DataTable( {
+        data: data,
+        paging: true,
+        "deferRender": true,
+        searchDelay: 500,
+        dom: 'Qlfrtip',
+        searchBuilder: {
+        preDefined: {
+            criteria: [
+                {
+                    data: 'Name',
+                    condition: 'contains',
+                    value: ['Nikon F-Mount']
+                },
+                {
+                    data: 'Name',
+                    condition: '!contains',
+                    value: ['APS-C']
+                }
+            ]
+        }
+      },
+        order: [[ 3, 'asc' ]],
+        columns: [
+            {data: 'brand', title: 'Marke'},
+            {data: 'name', title: 'Name',
+              render: function(data, type, row) {
+                // elem['link'] = f'https://www.{markt}.de/de/data/fundgrube?categorieIds={cat_id}&brandIds={brand_id}&outletIds={outlet_ids}'
+                const link = 'https://www.'+row.markt+'.de/de/data/fundgrube?categorieIds='+row.top_level_catalog_id+'&outletIds='+row.outlet_id+'&brands='+row.brand
+                return '<a href="'+link+'" target="_blank" rel="noreferrer noopener">' + data + '</a>'
+              }
+            },
+            {data: 'original_url', title: 'Bild', 
+              render: function(data, type, row) {
+                if (type === 'display') {
+                  let img = data.map(elem => {
+                    return '<a href="' + elem + '?strip=yes&quality=80&backgroundsize=cover&x=640&y=640" data-lightbox="'+row.posting_id+'"><img src="' + elem + '?strip=yes&quality=80&backgroundsize=cover&x=100&y=100"/></a>'
+                  })
+                  return img.join('')
+                }
+              }
+            },
+            {data: 'price', title: 'Preis (neu) €', searchable: false},
+            {data: 'price_old', title: 'Preis (alt) €', searchable: false},
+            {data: 'discount_in_percent', title: 'Rabatt %', searchable: false},
+            {data: 'outlet', title: 'Markt', searchable: false},
+            {data: 'posting_text', title: 'Text', width: "20%"}
+        ]
+    } );
+} );
+  </script>
+
+  <body>
+    <table id="example" class="display" width="100%"></table>
+  </body>
+</html>
